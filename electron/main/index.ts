@@ -39,6 +39,8 @@ import { syncAllProviderAuthToRuntime } from '../services/providers/provider-run
 
 const WINDOWS_APP_USER_MODEL_ID = 'com.evan5208.laolv';
 
+app.setName('老驴');
+
 // Disable GPU hardware acceleration globally for maximum stability across
 // all GPU configurations (no GPU, integrated, discrete).
 //

@@ -1,6 +1,5 @@
 appId: com.evan5208.laolv
 productName: 老驴
-executableName: laolv
 copyright: Copyright © 2026 老驴
 compression: maximum
 artifactName: laolv-${version}-${os}-${arch}.${ext}
@@ -56,6 +55,7 @@ publish:
 
 # macOS Configuration
 mac:
+  executableName: 老驴
   extraResources:
     - from: resources/bin/darwin-${arch}
       to: bin
@@ -79,6 +79,8 @@ mac:
   entitlementsInherit: entitlements.mac.plist
   notarize: true
   extendInfo:
+    CFBundleDisplayName: 老驴
+    CFBundleName: 老驴
     NSMicrophoneUsageDescription: 老驴需要麦克风权限以支持语音功能
     NSCameraUsageDescription: 老驴需要摄像头权限以支持视频功能
 
@@ -100,6 +102,7 @@ dmg:
 
 # Windows Configuration
 win:
+  executableName: laolv
   # Skip update signature verification: we ship via OSS + GitHub without a
   # code-signing certificate, so verifying would always fail on the updater.
   verifyUpdateCodeSignature: false
@@ -133,6 +136,7 @@ nsis:
 
 # Linux Configuration
 linux:
+  executableName: laolv
   extraResources:
     - from: resources/bin/linux-${arch}
       to: bin

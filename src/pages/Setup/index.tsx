@@ -110,7 +110,7 @@ import {
   hasConfiguredCredentials,
   pickPreferredAccount,
 } from '@/lib/provider-accounts';
-import brandIcon from '@/assets/logo.svg';
+import brandIcon from '@/assets/logo.png';
 
 // Use the shared provider registry for setup providers
 const providers = SETUP_PROVIDERS;
@@ -326,7 +326,7 @@ function WelcomeContent() {
   return (
     <div className="text-center space-y-4">
       <div className="mb-4 flex justify-center">
-        <img src={brandIcon} alt="老驴" className="h-16 w-16" />
+        <img src={brandIcon} alt="老驴" className="h-20 w-20 rounded-[24px] shadow-xl" />
       </div>
       <h2 className="text-xl font-semibold">{t('welcome.title')}</h2>
       <p className="text-muted-foreground">
