@@ -6,7 +6,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import i18n from '@/i18n';
 import { hostApiFetch } from '@/lib/host-api';
-import { resolveSupportedLanguage } from '../../shared/language';
+import { DEFAULT_LANGUAGE_CODE, resolveSupportedLanguage } from '../../shared/language';
 
 type Theme = 'light' | 'dark' | 'system';
 type UpdateChannel = 'stable' | 'beta' | 'dev';
@@ -67,7 +67,7 @@ interface SettingsState {
 
 const defaultSettings = {
   theme: 'system' as Theme,
-  language: resolveSupportedLanguage(typeof navigator !== 'undefined' ? navigator.language : undefined),
+  language: DEFAULT_LANGUAGE_CODE,
   startMinimized: false,
   launchAtStartup: false,
   telemetryEnabled: true,

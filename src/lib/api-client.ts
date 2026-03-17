@@ -707,7 +707,7 @@ export function createGatewayWsTransportInvoker(options: GatewayWsTransportOptio
         maxProtocol: 3,
         client: {
           id: 'openclaw-control-ui',
-          displayName: 'ClawX UI',
+          displayName: '老驴界面',
           version: '1.0.0',
           platform: window.electron?.platform ?? 'unknown',
           mode: 'webchat',
@@ -717,7 +717,7 @@ export function createGatewayWsTransportInvoker(options: GatewayWsTransportOptio
         role: 'operator',
         scopes: ['operator.admin'],
         userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
-        locale: typeof navigator !== 'undefined' ? navigator.language : 'en',
+        locale: typeof navigator !== 'undefined' ? navigator.language : 'zh',
       },
     }));
   };

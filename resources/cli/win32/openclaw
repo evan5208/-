@@ -5,13 +5,13 @@ INSTALL_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 case "$1" in
   update)
-    echo "openclaw is managed by ClawX (bundled version)."
+    echo "openclaw is managed by 老驴 (bundled version)."
     echo ""
-    echo "To update openclaw, update ClawX:"
-    echo "  Open ClawX > Settings > Check for Updates"
+    echo "To update openclaw, update 老驴:"
+    echo "  Open 老驴 > Settings > Check for Updates"
     exit 0
     ;;
 esac
 
-export OPENCLAW_EMBEDDED_IN="ClawX"
-ELECTRON_RUN_AS_NODE=1 exec "$INSTALL_DIR/ClawX.exe" "$INSTALL_DIR/resources/openclaw/openclaw.mjs" "$@"
+export OPENCLAW_EMBEDDED_IN="老驴"
+ELECTRON_RUN_AS_NODE=1 exec "$INSTALL_DIR/老驴.exe" "$INSTALL_DIR/resources/openclaw/openclaw.mjs" "$@"

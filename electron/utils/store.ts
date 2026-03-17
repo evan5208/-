@@ -5,7 +5,7 @@
 
 import { randomBytes } from 'crypto';
 import { app } from 'electron';
-import { resolveSupportedLanguage } from '../../shared/language';
+import { DEFAULT_LANGUAGE_CODE } from '../../shared/language';
 
 // Lazy-load electron-store (ESM module)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,14 +68,14 @@ function getSystemLocale(): string {
   return preferredLanguages[0]
     || (typeof app.getLocale === 'function' ? app.getLocale() : '')
     || Intl.DateTimeFormat().resolvedOptions().locale
-    || 'en';
+    || 'zh';
 }
 
 function createDefaultSettings(): AppSettings {
   return {
     // General
     theme: 'system',
-    language: resolveSupportedLanguage(getSystemLocale()),
+    language: DEFAULT_LANGUAGE_CODE,
     startMinimized: false,
     launchAtStartup: false,
     telemetryEnabled: true,
