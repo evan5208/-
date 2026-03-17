@@ -1,5 +1,6 @@
-appId: app.clawx.desktop
+appId: com.evan5208.laolv
 productName: 老驴
+executableName: laolv
 copyright: Copyright © 2026 老驴
 compression: maximum
 artifactName: ${productName}-${version}-${os}-${arch}.${ext}
@@ -51,7 +52,7 @@ npmRebuild: false
 publish:
   - provider: github
     owner: evan5208
-    repo: -
+    repo: "-"
 
 # macOS Configuration
 mac:
@@ -151,7 +152,7 @@ linux:
       arch:
         - x64
   category: Utility
-  maintainer: 老驴 Team <public@valuecell.ai>
+  maintainer: evan5208 <evan5208@users.noreply.github.com>
   vendor: 老驴
   synopsis: 基于 OpenClaw 的 AI 助手
   description: 老驴是一款基于 OpenClaw 网关的图形化 AI 助手应用，可在多个消息平台中提供智能自动化与协作能力。
@@ -161,7 +162,7 @@ linux:
       Comment: 基于 OpenClaw 的 AI 助手
       Categories: Utility;Network;
       Keywords: ai;assistant;automation;chat;
-      StartupWMClass: clawx
+      StartupWMClass: laolv
 
 appImage:
   license: LICENSE

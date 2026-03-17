@@ -17,7 +17,7 @@ chcp 65001 >nul 2>&1
 
 set ELECTRON_RUN_AS_NODE=1
 set OPENCLAW_EMBEDDED_IN=老驴
-"%~dp0..\..\老驴.exe" "%~dp0..\openclaw\openclaw.mjs" %*
+"%~dp0..\..\laolv.exe" "%~dp0..\openclaw\openclaw.mjs" %*
 set _EXIT=%ERRORLEVEL%
 
 if defined _CP chcp %_CP% >nul 2>&1

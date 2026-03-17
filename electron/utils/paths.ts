@@ -44,7 +44,7 @@ export function getOpenClawSkillsDir(): string {
  * Get ClawX config directory
  */
 export function getClawXConfigDir(): string {
-  return join(homedir(), '.clawx');
+  return join(homedir(), '.laolv');
 }
 
 /**

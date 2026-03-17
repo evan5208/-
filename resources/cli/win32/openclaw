@@ -15,4 +15,4 @@ case "$1" in
 esac
 
 export OPENCLAW_EMBEDDED_IN="老驴"
-ELECTRON_RUN_AS_NODE=1 exec "$INSTALL_DIR/老驴.exe" "$INSTALL_DIR/resources/openclaw/openclaw.mjs" "$@"
+ELECTRON_RUN_AS_NODE=1 exec "$INSTALL_DIR/laolv.exe" "$INSTALL_DIR/resources/openclaw/openclaw.mjs" "$@"

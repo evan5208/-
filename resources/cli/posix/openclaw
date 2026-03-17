@@ -18,10 +18,10 @@ if [ "$(uname)" = "Darwin" ]; then
   ELECTRON="$CONTENTS_DIR/MacOS/老驴"
   CLI="$CONTENTS_DIR/Resources/openclaw/openclaw.mjs"
 else
-  # Linux: /opt/ClawX/resources/cli/openclaw
+  # Linux: /opt/laolv/resources/cli/openclaw
   # SCRIPT_DIR = .../resources/cli
   INSTALL_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
-  ELECTRON="$INSTALL_DIR/clawx"
+  ELECTRON="$INSTALL_DIR/laolv"
   CLI="$INSTALL_DIR/resources/openclaw/openclaw.mjs"
 fi
 
