@@ -111,7 +111,7 @@
 
   ; Ask user if they want to completely remove all user data
   MessageBox MB_YESNO|MB_ICONQUESTION \
-    "Do you want to completely remove all 老驴 user data?$\r$\n$\r$\nThis will delete:$\r$\n  • .openclaw folder (configuration & skills)$\r$\n  • AppData\Local\laolv (local app data)$\r$\n  • AppData\Roaming\laolv (roaming app data)$\r$\n$\r$\nSelect 'No' to keep your data for future reinstallation." \
+    "Do you want to completely remove all 老驴 user data?$\r$\n$\r$\nThis will delete:$\r$\n  • .openclaw folder (configuration & skills)$\r$\n  • 老驴 local app data$\r$\n  • 老驴 roaming app data$\r$\n$\r$\nSelect 'No' to keep your data for future reinstallation." \
     /SD IDNO IDYES _cu_removeData IDNO _cu_skipRemove
 
   _cu_removeData:
