@@ -131,6 +131,8 @@ nsis:
   uninstallDisplayName: 老驴
   license: LICENSE
   include: scripts/installer.nsh
+  installerSidebar: resources/installer/installer-sidebar.bmp
+  uninstallerSidebar: resources/installer/uninstaller-sidebar.bmp
   installerIcon: resources/icons/icon.ico
   uninstallerIcon: resources/icons/icon.ico
 
