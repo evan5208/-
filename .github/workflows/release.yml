@@ -1,4 +1,4 @@
-# ClawX Release Workflow
+# 老驴 Release Workflow
 # Builds and publishes releases for macOS, Windows, and Linux
 
 name: Release
@@ -106,7 +106,7 @@ jobs:
           retention-days: 1
 
       - name: Sign Windows artifacts via SignPath
-        if: matrix.platform == 'win'
+        if: matrix.platform == 'win' && secrets.SIGNPATH_API_TOKEN != ''
         id: signpath-sign-windows
         uses: signpath/github-action-submit-signing-request@v2
         with:
@@ -119,7 +119,7 @@ jobs:
           output-artifact-directory: release/signed
 
       - name: Replace unsigned executables with signed ones
-        if: matrix.platform == 'win'
+        if: matrix.platform == 'win' && secrets.SIGNPATH_API_TOKEN != ''
         shell: pwsh
         run: |
           Write-Host "SignPath GitHub artifact ID: ${{ steps.upload-unsigned-windows-artifact.outputs.artifact-id }}"
@@ -139,6 +139,13 @@ jobs:
             throw "Final release .exe count ($($finalExeFiles.Count)) does not match unsigned count ($env:UNSIGNED_EXE_COUNT)"
           }
           Write-Host "Signed executables copied to release/ ($($finalExeFiles.Count) file(s))"
+
+      - name: Continue with unsigned Windows artifacts
+        if: matrix.platform == 'win' && secrets.SIGNPATH_API_TOKEN == ''
+        shell: pwsh
+        run: |
+          Write-Host "SIGNPATH_API_TOKEN is not configured."
+          Write-Host "Publishing unsigned Windows installers for this release."
 
       # Linux specific steps
       - name: Build Linux
@@ -205,28 +212,28 @@ jobs:
           make_latest: false
           generate_release_notes: true
           body: |
-            ## 🚀 ClawX ${{ github.ref_name }}
-            
-            ClawX - Graphical AI Assistant based on OpenClaw
+            ## 老驴 ${{ github.ref_name }}
+
+            老驴 / STEAD is a desktop workspace for OpenClaw that helps you get work done faster.
             
             ### 📦 Downloads
             
             Please select the appropriate installer for your operating system and architecture:
             
             #### macOS
-            - **Apple Silicon (M1/M2/M3/M4)**: `ClawX-*-mac-arm64.dmg`
-            - **Intel (x64)**: `ClawX-*-mac-x64.dmg`
+            - **Apple Silicon (M1/M2/M3/M4)**: `laolv-*-mac-arm64.dmg`
+            - **Intel (x64)**: `laolv-*-mac-x64.dmg`
             
             #### Windows
-            - **Installer (x64)**: `ClawX-*-win-x64.exe`
-            - **Installer (ARM64)**: `ClawX-*-win-arm64.exe`
+            - **Installer (x64)**: `laolv-*-win-x64.exe`
+            - **Installer (ARM64)**: `laolv-*-win-arm64.exe`
             
             #### Linux
-            - **AppImage (x64)**: `ClawX-*-linux-x86_64.AppImage` (Universal format, recommended)
-            - **AppImage (ARM64)**: `ClawX-*-linux-arm64.AppImage`
-            - **Debian/Ubuntu (x64)**: `ClawX-*-linux-amd64.deb`
-            - **Debian/Ubuntu (ARM64)**: `ClawX-*-linux-arm64.deb`
-            - **RPM (x64)**: `ClawX-*-linux-x86_64.rpm`
+            - **AppImage (x64)**: `laolv-*-linux-x86_64.AppImage` (Universal format, recommended)
+            - **AppImage (ARM64)**: `laolv-*-linux-arm64.AppImage`
+            - **Debian/Ubuntu (x64)**: `laolv-*-linux-amd64.deb`
+            - **Debian/Ubuntu (ARM64)**: `laolv-*-linux-arm64.deb`
+            - **RPM (x64)**: `laolv-*-linux-x86_64.rpm`
             
             ### 📝 Release Notes
             
@@ -235,8 +242,8 @@ jobs:
             ### ⚠️ Installation Notes
             
             - **macOS**: On first launch, you may see "cannot verify developer". Go to System Preferences → Security & Privacy to allow the app to run
-            - **Windows**: SmartScreen may block the app. Click "More info" → "Run anyway" to proceed
-            - **Linux AppImage**: First run `chmod +x ClawX-*.AppImage` to add execute permission. On Ubuntu 22.04 you may also need `sudo apt install libfuse2`; on Ubuntu 24.04 use `sudo apt install libfuse2t64`
+            - **Windows**: Unsigned builds may trigger SmartScreen. Click "More info" → "Run anyway" to proceed
+            - **Linux AppImage**: First run `chmod +x laolv-*.AppImage` to add execute permission. On Ubuntu 22.04 you may also need `sudo apt install libfuse2`; on Ubuntu 24.04 use `sudo apt install libfuse2t64`
             - **Linux .deb (Ubuntu 24.04)**: If installation fails due to missing dependencies, use `sudo apt install libgtk-3-0t64 libnotify4t64 libxss1t64` before installing
             
             ---
@@ -339,19 +346,19 @@ jobs:
               releaseDate: $date,
               downloads: {
                 mac: {
-                  x64: ($base + "/ClawX-" + $version + "-mac-x64.dmg"),
-                  arm64: ($base + "/ClawX-" + $version + "-mac-arm64.dmg")
+                  x64: ($base + "/laolv-" + $version + "-mac-x64.dmg"),
+                  arm64: ($base + "/laolv-" + $version + "-mac-arm64.dmg")
                 },
                 win: {
-                  x64: ($base + "/ClawX-" + $version + "-win-x64.exe"),
-                  arm64: ($base + "/ClawX-" + $version + "-win-arm64.exe")
+                  x64: ($base + "/laolv-" + $version + "-win-x64.exe"),
+                  arm64: ($base + "/laolv-" + $version + "-win-arm64.exe")
                 },
                 linux: {
-                  deb_amd64: ($base + "/ClawX-" + $version + "-linux-amd64.deb"),
-                  deb_arm64: ($base + "/ClawX-" + $version + "-linux-arm64.deb"),
-                  appimage_x64: ($base + "/ClawX-" + $version + "-linux-x86_64.AppImage"),
-                  appimage_arm64: ($base + "/ClawX-" + $version + "-linux-arm64.AppImage"),
-                  rpm_x64: ($base + "/ClawX-" + $version + "-linux-x86_64.rpm")
+                  deb_amd64: ($base + "/laolv-" + $version + "-linux-amd64.deb"),
+                  deb_arm64: ($base + "/laolv-" + $version + "-linux-arm64.deb"),
+                  appimage_x64: ($base + "/laolv-" + $version + "-linux-x86_64.AppImage"),
+                  appimage_arm64: ($base + "/laolv-" + $version + "-linux-arm64.AppImage"),
+                  rpm_x64: ($base + "/laolv-" + $version + "-linux-x86_64.rpm")
                 }
               },
               changelog: $changelog
