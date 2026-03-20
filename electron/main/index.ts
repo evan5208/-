@@ -2,7 +2,7 @@
  * Electron Main Process Entry
  * Manages window creation, system tray, and IPC handlers
  */
-import { app, BrowserWindow, nativeImage, session, shell } from 'electron';
+import { app, BrowserWindow, dialog, nativeImage, session, shell } from 'electron';
 import type { Server } from 'node:http';
 import { join } from 'path';
 import { GatewayManager } from '../gateway/manager';
@@ -36,10 +36,35 @@ import { deviceOAuthManager } from '../utils/device-oauth';
 import { browserOAuthManager } from '../utils/browser-oauth';
 import { whatsAppLoginManager } from '../utils/whatsapp-login';
 import { syncAllProviderAuthToRuntime } from '../services/providers/provider-runtime-sync';
+import { getLogFilePath } from '../utils/logger';
 
 const WINDOWS_APP_USER_MODEL_ID = 'com.evan5208.laolv';
 
 app.setName('老驴');
+
+let startupErrorDialogShown = false;
+
+function showStartupError(message: string, error?: unknown): void {
+  if (startupErrorDialogShown) {
+    return;
+  }
+  startupErrorDialogShown = true;
+
+  const detail =
+    error instanceof Error
+      ? error.message
+      : typeof error === 'string'
+        ? error
+        : error != null
+          ? JSON.stringify(error, null, 2)
+          : '';
+
+  const logFilePath = getLogFilePath();
+  const logHint = logFilePath ? `\n\n日志文件：${logFilePath}` : '';
+  const errorHint = detail ? `\n\n${detail}` : '';
+
+  dialog.showErrorBox('老驴启动失败', `${message}${errorHint}${logHint}`);
+}
 
 // Disable GPU hardware acceleration globally for maximum stability across
 // all GPU configurations (no GPU, integrated, discrete).
@@ -142,11 +167,20 @@ function createWindow(): BrowserWindow {
   });
 
   // Load the app
+  const loadPromise = process.env.VITE_DEV_SERVER_URL
+    ? win.loadURL(process.env.VITE_DEV_SERVER_URL)
+    : win.loadFile(join(__dirname, '../../dist/index.html'));
+
+  void loadPromise.catch((error) => {
+    logger.error('Failed to load main window entry:', error);
+    showStartupError('主界面入口加载失败。', error);
+    if (!win.isDestroyed()) {
+      win.show();
+    }
+  });
+
   if (process.env.VITE_DEV_SERVER_URL) {
-    win.loadURL(process.env.VITE_DEV_SERVER_URL);
     win.webContents.openDevTools();
-  } else {
-    win.loadFile(join(__dirname, '../../dist/index.html'));
   }
 
   return win;
@@ -176,11 +210,30 @@ function focusMainWindow(): void {
 
 function createMainWindow(): BrowserWindow {
   const win = createWindow();
+  let windowRevealed = false;
+  let revealTimeout: NodeJS.Timeout | null = null;
+  let startupErrorShown = false;
 
-  win.once('ready-to-show', () => {
-    if (mainWindow !== win) {
+  const reportWindowStartupError = (message: string, error?: unknown) => {
+    if (startupErrorShown) {
       return;
     }
+    startupErrorShown = true;
+    showStartupError(message, error);
+  };
+
+  const revealWindow = (reason: string) => {
+    if (windowRevealed || mainWindow !== win || win.isDestroyed()) {
+      return;
+    }
+
+    windowRevealed = true;
+    if (revealTimeout) {
+      clearTimeout(revealTimeout);
+      revealTimeout = null;
+    }
+
+    logger.info(`Revealing main window via ${reason}`);
 
     const action = consumeMainWindowReady(mainWindowFocusState);
     if (action === 'focus') {
@@ -189,6 +242,41 @@ function createMainWindow(): BrowserWindow {
     }
 
     win.show();
+  };
+
+  win.once('ready-to-show', () => {
+    revealWindow('ready-to-show');
+  });
+
+  win.webContents.once('did-finish-load', () => {
+    logger.info('Main window finished loading renderer content');
+    if (!windowRevealed) {
+      revealWindow('did-finish-load');
+    }
+  });
+
+  win.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL, isMainFrame) => {
+    if (!isMainFrame) {
+      return;
+    }
+
+    const detail = `code=${errorCode}, description=${errorDescription}, url=${validatedURL || '<empty>'}`;
+    logger.error('Main window failed to load:', detail);
+    revealWindow('did-fail-load');
+    reportWindowStartupError('主界面加载失败。', detail);
+  });
+
+  win.webContents.on('render-process-gone', (_event, details) => {
+    logger.error('Main window render process exited:', details);
+    revealWindow('render-process-gone');
+    reportWindowStartupError('界面进程异常退出。', `${details.reason}${details.exitCode != null ? ` (code=${details.exitCode})` : ''}`);
+  });
+
+  win.on('unresponsive', () => {
+    logger.warn('Main window became unresponsive');
+    if (!windowRevealed) {
+      revealWindow('unresponsive');
+    }
   });
 
   win.on('close', (event) => {
@@ -199,12 +287,22 @@ function createMainWindow(): BrowserWindow {
   });
 
   win.on('closed', () => {
+    if (revealTimeout) {
+      clearTimeout(revealTimeout);
+      revealTimeout = null;
+    }
     if (mainWindow === win) {
       mainWindow = null;
     }
   });
 
   mainWindow = win;
+  revealTimeout = setTimeout(() => {
+    if (!windowRevealed) {
+      logger.warn('Main window did not become ready in time; forcing it visible');
+      revealWindow('startup-timeout');
+    }
+  }, 8000);
   return win;
 }
 
@@ -442,6 +540,7 @@ if (gotTheLock) {
   app.whenReady().then(() => {
     void initialize().catch((error) => {
       logger.error('Application initialization failed:', error);
+      showStartupError('应用初始化失败。', error);
     });
 
     // Register activate handler AFTER app is ready to prevent
